@@ -4,10 +4,13 @@ import { conn } from "../db.js"
 export const createUser = async (req,res) => {
     const { email, password } = req.body
     const username = "user"
-    console.log(req.body)
     const [rows] = await conn.query("INSERT INTO user (username, email, password) VALUES (?,?,?)",[username,email,password])
     console.log(rows)
-    res.json(rows[0])
+    if (rows.insertId !== undefined) {
+        res.json(true)
+    } else {
+        res.json(false)
+    }
 }
 
 // Login
