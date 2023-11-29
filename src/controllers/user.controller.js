@@ -1,17 +1,24 @@
 import { conn } from "../db.js"
 // Correo, nombre, contrasena
-// Registrar
-export const createUser = async (req,res) => {
-    const { email, password } = req.body
-    const username = "user"
-    const [rows] = await conn.query("INSERT INTO user (username, email, password) VALUES (?,?,?)",[username,email,password])
-    console.log(rows)
-    if (rows.insertId !== undefined) {
-        res.json(true)
+// Register
+export const createUser = async (req, res) => {
+    const { email, password } = req.body;
+    const username = "user"; 
+
+    const [existingUser] = await conn.query("SELECT * FROM user WHERE email = ?", [email]);
+
+    if (existingUser.length > 0) {
+        res.json(false);
     } else {
-        res.json(false)
+        const [rows] = await conn.query("INSERT INTO user (username, email, password) VALUES (?,?,?)", [username, email, password]);
+
+        if (rows.insertId !== undefined) {
+            res.json(true);
+        } else {
+            res.json(false);
+        }
     }
-}
+};
 
 // Login
 export const login = async (req, res) => {
